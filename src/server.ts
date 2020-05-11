@@ -12,19 +12,22 @@ import { filterImageFromURL, deleteLocalFiles } from "./util/util";
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
-  app.get("/filteredimage", async (req, res) => {
-    let { image_url } = req.query;
-    if (!image_url || !(typeof image_url === "string")) {
-      return res.status(400).send("Url is missing in query params");
-    }
+  app.get(
+    "/filteredimage",
+    async (req: express.Request, res: express.Response) => {
+      let { image_url }: { image_url: string } = req.query;
+      if (!image_url) {
+        return res.status(400).send("Url is missing in query params");
+      }
 
-    try {
-      let result = await filterImageFromURL(image_url);
-      return res.sendFile(result, () => deleteLocalFiles([result]));
-    } catch {
-      return res.status(400).send("failed to filter image from url");
+      try {
+        let result = await filterImageFromURL(image_url);
+        return res.sendFile(result, () => deleteLocalFiles([result]));
+      } catch {
+        return res.status(400).send("failed to filter image from url");
+      }
     }
-  });
+  );
 
   // Root Endpoint
   // Displays a simple message to the user
